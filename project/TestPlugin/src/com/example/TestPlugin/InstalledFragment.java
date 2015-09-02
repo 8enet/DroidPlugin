@@ -17,6 +17,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,6 +32,7 @@ import com.morgoo.droidplugin.pm.PluginManager;
 import java.util.List;
 
 public class InstalledFragment extends ListFragment implements ServiceConnection {
+    private static final String TAG = "InstalledFragment";
 
     private ArrayAdapter<ApkItem> adapter;
 
@@ -48,6 +50,7 @@ public class InstalledFragment extends ListFragment implements ServiceConnection
             PackageManager pm = getActivity().getPackageManager();
             Intent intent = pm.getLaunchIntentForPackage(item.packageInfo.packageName);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Log.e(TAG,"onListItemClick   "+intent.getComponent());
             startActivity(intent);
         } else if (v.getId() == R.id.button3) {
             doUninstall(item);

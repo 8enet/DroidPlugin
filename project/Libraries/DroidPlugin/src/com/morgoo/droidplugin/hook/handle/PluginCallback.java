@@ -235,7 +235,7 @@ public class PluginCallback implements Handler.Callback {
             if (!mEnable) {
                 return false;
             }
-
+            android.util.Log.e(TAG,"handleMessage   -->>>  "+msg+"    code  "+codeToString(msg.what)+"   "+mCallback);
             if (PluginProcessManager.isPluginProcess(mHostContext)) {
                 if (!PluginManager.getInstance().isConnected()) {
                     //这里必须要这么做。如果当前进程是插件进程，并且，还没有绑定上插件管理服务，我们则把消息延迟一段时间再处理。
@@ -421,6 +421,7 @@ public class PluginCallback implements Handler.Callback {
                         FieldUtils.writeDeclaredField(msg.obj, "intent", targetIntent);
                     }
                     FieldUtils.writeDeclaredField(msg.obj, "activityInfo", targetActivityInfo);
+                    android.util.Log.e(TAG,"handleLaunchActivity  -->>> targetIntent "+targetIntent+"    targetActivityInfo  "+targetActivityInfo);
 
                     Log.i(TAG, "handleLaunchActivity OK");
                 } else {

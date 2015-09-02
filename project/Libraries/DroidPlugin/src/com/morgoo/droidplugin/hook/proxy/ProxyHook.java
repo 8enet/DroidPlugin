@@ -24,6 +24,7 @@ package com.morgoo.droidplugin.hook.proxy;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.morgoo.droidplugin.hook.Hook;
 import com.morgoo.droidplugin.hook.HookedMethodHandler;
@@ -32,14 +33,17 @@ import com.morgoo.helper.MyProxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.DatagramSocket;
+import java.util.Arrays;
+import java.util.Objects;
+
 
 /**
  * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/3/14.
  */
 public abstract class ProxyHook extends Hook implements InvocationHandler {
 
+    private static final String TAG = "Proxy--Hook";
+    
     protected Object mOldObj;
 
     public ProxyHook(Context hostContext) {
@@ -50,14 +54,21 @@ public abstract class ProxyHook extends Hook implements InvocationHandler {
         this.mOldObj = oldObj;
     }
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         try {
+
             if (!isEnable()) {
                 return method.invoke(mOldObj, args);
             }
             HookedMethodHandler hookedMethodHandler = mHookHandles.getHookedMethodHandler(method);
+
             if (hookedMethodHandler != null) {
+                //if(hookedMethodHandler.getClass().getName().contains("startActivity")){
+                    Log.e(TAG, "invoke -->> "+method.getName()+" -->  "+hookedMethodHandler.getClass().getName()+"   <-- args "+ arraysToString(args));
+                //}
+
                 return hookedMethodHandler.doHookInner(mOldObj, method, args);
             }
             return method.invoke(mOldObj, args);
@@ -83,5 +94,29 @@ public abstract class ProxyHook extends Hook implements InvocationHandler {
                 throw runtimeException;
             }
         }
+    }
+
+
+    public static String arraysToString(Object[] array) {
+        if (array == null) {
+            return "null";
+        }
+        if (array.length == 0) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder(array.length * 7);
+        sb.append('[');
+        sb.append(array[0]);
+        for (int i = 1; i < array.length; i++) {
+            sb.append(", ");
+            if(array[i] instanceof Object[]){
+                sb.append(arraysToString((Object[])array[i]));
+            }else {
+                sb.append(array[i]);
+            }
+
+        }
+        sb.append(']');
+        return sb.toString();
     }
 }

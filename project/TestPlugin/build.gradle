@@ -12,14 +12,14 @@ dependencies {
 
 
 android {
-    signingConfigs {
-        MySignConfig {
-            storeFile file(readProperty("key.store", "key.store"))
-            keyAlias readProperty("key.alias", "key.alias")
-            keyPassword readProperty("key.alias.password", "key.alias.password")
-            storePassword readProperty("key.store.password", "key.store.password")
-        }
-    }
+//    signingConfigs {
+//        MySignConfig {
+//            storeFile file(readProperty("key.store", "key.store"))
+//            keyAlias readProperty("key.alias", "key.alias")
+//            keyPassword readProperty("key.alias.password", "key.alias.password")
+//            storePassword readProperty("key.store.password", "key.store.password")
+//        }
+//    }
 
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -55,7 +55,7 @@ android {
             minifyEnabled true
             pseudoLocalesEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), "proguard-project.txt"
-            signingConfig signingConfigs.MySignConfig
+//            signingConfig signingConfigs.MySignConfig
         }
     }
 

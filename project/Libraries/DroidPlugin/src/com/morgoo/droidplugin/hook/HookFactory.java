@@ -38,6 +38,7 @@ import com.morgoo.droidplugin.hook.binder.INotificationManagerBinderHook;
 import com.morgoo.droidplugin.hook.binder.ISessionManagerBinderHook;
 import com.morgoo.droidplugin.hook.binder.IWifiManagerBinderHook;
 import com.morgoo.droidplugin.hook.binder.IWindowManagerBinderHook;
+import com.morgoo.droidplugin.hook.proxy.HttpHook;
 import com.morgoo.droidplugin.hook.proxy.IActivityManagerHook;
 import com.morgoo.droidplugin.hook.proxy.IPackageManagerHook;
 import com.morgoo.droidplugin.hook.proxy.InstrumentationHook;
@@ -140,7 +141,7 @@ public class HookFactory {
         installHook(new PluginCallbackHook(context), classLoader);
         installHook(new InstrumentationHook(context), classLoader);
         installHook(new LibCoreHook(context), classLoader);
-
+        installHook(new HttpHook(context),classLoader);
         installHook(new SQLiteDatabaseHook(context), classLoader);
     }
 

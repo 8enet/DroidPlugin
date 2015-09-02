@@ -58,6 +58,7 @@ import com.morgoo.helper.compat.ContentProviderHolderCompat;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -144,13 +145,16 @@ public class IActivityManagerHookHandle extends BaseHookHandle {
         }
 
         protected void doReplaceIntentForStartActivityAPIHigh(Object[] args) throws RemoteException {
+
             int intentOfArgIndex = findFirstIntentIndexInArgs(args);
             if (args != null && args.length > 1 && intentOfArgIndex >= 0) {
                 Intent intent = (Intent) args[intentOfArgIndex];
+                android.util.Log.e(TAG, "StartActivityAPIHigh -->>args  intent "+ intent);
                 //XXX String callingPackage = (String) args[1];
                 ActivityInfo activityInfo = resolveActivity(intent);
                 if (activityInfo != null && isPackagePlugin(activityInfo.packageName)) {
                     ComponentName component = selectProxyActivity(intent);
+                    android.util.Log.e(TAG, "StartActivityAPIHigh -->>component "+ component);
                     if (component != null) {
                         Intent newIntent = new Intent();
                         try {
@@ -171,6 +175,7 @@ public class IActivityManagerHookHandle extends BaseHookHandle {
                         if (TextUtils.equals(mHostContext.getPackageName(), callingPackage)) {
                             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         }
+                        android.util.Log.e(TAG, "StartActivityAPIHigh -->>newIntent "+ newIntent);
                         args[intentOfArgIndex] = newIntent;
                         args[1] = mHostContext.getPackageName();
                     } else {

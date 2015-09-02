@@ -46,7 +46,7 @@ public class IActivityManagerHook extends ProxyHook {
 
     private static final String TAG = IActivityManagerHook.class.getSimpleName();
 
-    public IActivityManagerHook(Context hostContext) {
+    public  IActivityManagerHook(Context hostContext) {
         super(hostContext);
     }
 

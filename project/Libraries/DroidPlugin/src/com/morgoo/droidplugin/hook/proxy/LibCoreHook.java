@@ -30,6 +30,7 @@ import com.morgoo.droidplugin.reflect.FieldUtils;
 import com.morgoo.helper.Log;
 import com.morgoo.helper.MyProxy;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 /**

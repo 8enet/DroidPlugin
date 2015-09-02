@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ApkFragment extends ListFragment implements ServiceConnection {
+    private static final String TAG = "ApkFragment";
     private ArrayAdapter<ApkItem> adapter;
     final Handler handler = new Handler();
 
@@ -165,7 +167,7 @@ public class ApkFragment extends ListFragment implements ServiceConnection {
                     }
                 }
 
-                file = new File(Environment.getExternalStorageDirectory(), "360Download");
+                file = new File(Environment.getExternalStorageDirectory(), "apk");
                 if (file.exists() && file.isDirectory()) {
                     for (File apk : file.listFiles()) {
                         if (apk.exists() && apk.getPath().toLowerCase().endsWith(".apk")) {
@@ -243,6 +245,7 @@ public class ApkFragment extends ListFragment implements ServiceConnection {
             }
         });
         try {
+            Log.e(TAG,"doInstall   "+item.apkfile);
             final int re = PluginManager.getInstance().installPackage(item.apkfile, 0);
             item.installing = false;
 
