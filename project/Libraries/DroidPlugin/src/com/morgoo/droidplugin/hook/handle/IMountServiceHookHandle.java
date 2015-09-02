@@ -27,6 +27,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.text.TextUtils;
+
 import com.morgoo.droidplugin.hook.BaseHookHandle;
 import com.morgoo.droidplugin.hook.HookedMethodHandler;
 
@@ -37,6 +38,9 @@ import java.lang.reflect.Method;
  * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/3/6.
  */
 public class IMountServiceHookHandle extends BaseHookHandle {
+    private static final String TAG = "IMountServiceHookHandle";
+    private static final String A_DATA_KEY="Android/data/";
+
     public IMountServiceHookHandle(Context context) {
         super(context);
     }
@@ -53,39 +57,45 @@ public class IMountServiceHookHandle extends BaseHookHandle {
 
         @Override
         protected boolean beforeInvoke(Object receiver, Method method, Object[] args) throws Throwable {
+            final int pkgIndex = 0;
+            int pathIndex = 1;
             if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-                final int index = 0;
-                if (args != null && args.length > index && args[index] instanceof String) {
-                    String callingPkg = (String) args[index];
-                    if (!TextUtils.equals(callingPkg, mHostContext.getPackageName())) {
-                        args[index] = mHostContext.getPackageName();
-                    }
-                }
-
-                //FIXME 这里这种暴力修改方式可能会产生问题。比如插件直接写死的情况。
-                final int index1 = 1;
-                if (args != null && args.length > index1 && args[index1] instanceof String) {
-                    String path = (String) args[index1];
-                    String path1 = new File(Environment.getExternalStorageDirectory(), "Android/data/").getPath();
-                    if (path != null && path.startsWith(path1)) {
-                        path = path.replace("Android/data/", "Android/data/"+mHostContext.getPackageName()+"/Plugin/");
-                        args[index1] = path;
+                if (args != null && args.length > pkgIndex && args[pkgIndex] instanceof String) {
+                    String oldPkg = (String) args[pkgIndex];
+                    if (!TextUtils.equals(oldPkg, mHostContext.getPackageName())) {
+                        args[pkgIndex] = mHostContext.getPackageName();
                     }
                 }
             } else {
-                //FIXME 这里这种暴力修改方式可能会产生问题。比如插件直接写死的情况。
-                final int index1 = 0;
-                if (args != null && args.length > index1 && args[index1] instanceof String) {
-                    String path = (String) args[index1];
-                    String path1 = new File(Environment.getExternalStorageDirectory(), "Android/data/").getPath();
-                    if (path != null && path.startsWith(path1)) {
-                        path = path.replace("Android/data/", "Android/data/"+mHostContext.getPackageName()+"/Plugin/");
-                        args[index1] = path;
-                    }
-                }
+                pathIndex=0;
             }
 
+            if (args != null && args.length > pathIndex && args[pathIndex] instanceof String) {
+                String path = (String) args[pathIndex];
+                String path1 = new File(Environment.getExternalStorageDirectory(), A_DATA_KEY).getPath();
+
+                //前缀相同的可以直接替换
+                if (path.startsWith(path1)) {
+                    path = path.replace(A_DATA_KEY, A_DATA_KEY+mHostContext.getPackageName()+"/Plugin/");
+                    args[pathIndex] = path;
+                }else {
+                    //不相同就拼接相对路径
+                    //前缀有可能是/storage/sdcard1 、/storage/emulated/0 、/sdcard 但对应的位置确是一样的，
+                    //有时候不同方式得到的并不相同，所以截取后面的相对路径
+                    String oldRelaPath=findOldPath(path);
+                    if(oldRelaPath != null)
+                    args[pathIndex]=path1+"/"+mHostContext.getPackageName()+"/Plugin/"+oldRelaPath;
+                }
+            }
             return super.beforeInvoke(receiver, method, args);
+        }
+
+        private String findOldPath(String path){
+            int idx=path.indexOf(A_DATA_KEY);
+            if(idx != -1){
+                return path.substring(idx+A_DATA_KEY.length());
+            }
+            return null;
         }
     }
 }

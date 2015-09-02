@@ -58,9 +58,9 @@ public class IActivityManagerHook extends ProxyHook {
     @Override
     public void onInstall(ClassLoader classLoader) throws Throwable {
         Class cls = ActivityManagerNativeCompat.Class();
-        Object obj = FieldUtils.readStaticField(cls, "gDefault");
+        Object obj = FieldUtils.readStaticField(cls, "gDefault"); //Singleton<IActivityManager>
         if (obj == null) {
-            ActivityManagerNativeCompat.getDefault();
+            ActivityManagerNativeCompat.getDefault(); // IActivityManager
             obj = FieldUtils.readStaticField(cls, "gDefault");
         }
 
@@ -71,9 +71,8 @@ public class IActivityManagerHook extends ProxyHook {
             Class[] ifs = interfaces != null && interfaces.size() > 0 ? interfaces.toArray(new Class[interfaces.size()]) : new Class[0];
             Object proxiedActivityManager = MyProxy.newProxyInstance(objClass.getClassLoader(), ifs, this);
             FieldUtils.writeStaticField(cls, "gDefault", proxiedActivityManager);
-            Log.i(TAG, "Install ActivityManager Hook 1 old=%s,new=%s", mOldObj, proxiedActivityManager);
         } else if (SingletonCompat.isSingleton(obj)) {
-            Object obj1 = FieldUtils.readField(obj, "mInstance");
+            Object obj1 = FieldUtils.readField(obj, "mInstance"); // IActivityManager
             if (obj1 == null) {
                 SingletonCompat.get(obj);
                 obj1 = FieldUtils.readField(obj, "mInstance");
@@ -96,7 +95,7 @@ public class IActivityManagerHook extends ProxyHook {
                 }
             });
 
-            Log.i(TAG, "Install ActivityManager Hook 2 old=%s,new=%s", mOldObj.toString(), object);
+            Log.e(TAG, "Install ActivityManager Hook 2 old=%s,new=%s", mOldObj.toString(), object);
             Object iam2 = ActivityManagerNativeCompat.getDefault();
             // 方式2
             if (iam1 == iam2) {

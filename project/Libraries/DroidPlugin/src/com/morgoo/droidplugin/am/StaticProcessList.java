@@ -53,7 +53,7 @@ class StaticProcessList {
     //key=processName value=ProcessItem
     private Map<String, ProcessItem> items = new HashMap<String, ProcessItem>(10);
 
-    private List<String> mOtherProcessNames = new ArrayList<>();
+    private List<String> mOtherProcessNames = new ArrayList<String>();
 
 
     /**

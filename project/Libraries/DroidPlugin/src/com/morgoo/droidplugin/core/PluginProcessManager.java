@@ -93,7 +93,7 @@ public class PluginProcessManager {
         return sCurrentProcessName;
     }
 
-    private static List<String> sProcessList = new ArrayList<>();
+    private static List<String> sProcessList = new ArrayList<String>();
 
 
     private static void initProcessList(Context context) {
