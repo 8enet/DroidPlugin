@@ -23,6 +23,8 @@
 package com.morgoo.droidplugin.stub;
 
 import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by Andy Zhang(zhangyong232@gmail.com) on 2015/2/9.
@@ -40,6 +42,11 @@ public abstract class ActivityStub extends Activity {
     }
 
     public static class StandardP00 extends ActivityStub {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.e("ActivityStub", "onCreate -->> StandardP00 ");
+        }
     }
 
 
@@ -54,6 +61,11 @@ public abstract class ActivityStub extends Activity {
     }
 
     public static class StandardP01 extends ActivityStub {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.e("ActivityStub", "onCreate -->> StandardP01 ");
+        }
     }
 
     //p3
@@ -67,6 +79,11 @@ public abstract class ActivityStub extends Activity {
     }
 
     public static class StandardP02 extends ActivityStub {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.e("ActivityStub", "onCreate -->> StandardP02 ");
+        }
     }
 
 
@@ -81,6 +98,11 @@ public abstract class ActivityStub extends Activity {
     }
 
     public static class StandardP03 extends ActivityStub {
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.e("ActivityStub", "onCreate -->> StandardP03 ");
+        }
     }
 
     //p5

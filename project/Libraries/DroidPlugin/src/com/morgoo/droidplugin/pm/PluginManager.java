@@ -803,10 +803,10 @@ public class PluginManager implements ServiceConnection {
         try {
             if (mPluginManager != null) {
                 int result = mPluginManager.installPackage(filepath, flags);
-                Log.w(TAG, String.format("%s install result %d", filepath, result));
+                Log.e(TAG, String.format("%s install result %d", filepath, result));
                 return result;
             } else {
-                Log.w(TAG, "Plugin Package Manager Service not be connect");
+                Log.e(TAG, "Plugin Package Manager Service not be connect");
             }
         } catch (RemoteException e) {
             throw e;

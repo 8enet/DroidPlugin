@@ -248,6 +248,7 @@ public class PluginCallback implements Handler.Callback {
             }
 
             if (msg.what == LAUNCH_ACTIVITY) {
+                Log.e(TAG, "handleMessage -->> LAUNCH_ACTIVITY -----!!!!!!!");
                 return handleLaunchActivity(msg);
             } /*else if (msg.what == INSTALL_PROVIDER) {
                 return handleInstallProvider(msg);

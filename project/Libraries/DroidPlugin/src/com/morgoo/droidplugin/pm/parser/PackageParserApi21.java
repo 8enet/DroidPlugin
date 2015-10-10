@@ -190,18 +190,20 @@ class PackageParserApi21 extends PackageParser {
             Method method = MethodUtils.getAccessibleMethod(sPackageParserClass, "generatePackageInfo",
                     mPackage.getClass(),
                     int[].class, int.class, long.class, long.class, Set.class, sPackageUserStateClass, int.class);
+            Log.e(TAG, "get generatePackageInfo 1 success");
             return (PackageInfo) method.invoke(null, mPackage, gids, flags, firstInstallTime, lastUpdateTime, grantedPermissions, mDefaultPackageUserState, mUserId);
         } catch (NoSuchMethodException e) {
-            Log.i(TAG, "get generatePackageInfo 1 fail", e);
+            Log.w(TAG, "get generatePackageInfo 1 fail", e);
         }
 
         try {
             Method method = MethodUtils.getAccessibleMethod(sPackageParserClass, "generatePackageInfo",
                     mPackage.getClass(),
                     int[].class, int.class, long.class, long.class, HashSet.class, sPackageUserStateClass, int.class);
+            Log.e(TAG, "get generatePackageInfo 2 success");
             return (PackageInfo) method.invoke(null, mPackage, gids, flags, firstInstallTime, lastUpdateTime, grantedPermissions, mDefaultPackageUserState, mUserId);
         } catch (NoSuchMethodException e) {
-            Log.i(TAG, "get generatePackageInfo 2 fail", e);
+            Log.w(TAG, "get generatePackageInfo 2 fail", e);
         }
 
         try {
@@ -217,9 +219,10 @@ class PackageParserApi21 extends PackageParser {
             }
             if (grantedPermissionsArray == null) {
                 grantedPermissionsArray = grantedPermissions;            }
+            Log.e(TAG, "get generatePackageInfo 3 success");
             return (PackageInfo) method.invoke(null, mPackage, gids, flags, firstInstallTime, lastUpdateTime, grantedPermissionsArray, mDefaultPackageUserState, mUserId);
         } catch (NoSuchMethodException e) {
-            Log.i(TAG, "get generatePackageInfo 3 fail", e);
+            Log.w(TAG, "get generatePackageInfo 3 fail", e);
         }
 
         throw new NoSuchMethodException("Can not found method generatePackageInfo");

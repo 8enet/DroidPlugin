@@ -226,6 +226,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
 
 
     private void handleException(Exception e) throws RemoteException {
+        Log.e(TAG, "handleException -->> "+ android.util.Log.getStackTraceString(e));
         RemoteException remoteException;
         if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
             remoteException = new RemoteException(e.getMessage());
@@ -831,7 +832,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                 if (mPluginCache.containsKey(info.packageName)) {
                     deleteApplicationCacheFiles(info.packageName, null);
                 }
-                new File(apkfile).delete();
+                Utils.deleteFile(apkfile);
                 Utils.copyFile(filepath, apkfile);
                 PluginPackageParser parser = new PluginPackageParser(mContext, new File(apkfile));
                 parser.collectCertificates(0);
@@ -845,7 +846,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                         }
                         if (!mHostRequestedPermission.contains(requestedPermission) && b) {
                             Log.e(TAG, "No Permission %s", requestedPermission);
-                            new File(apkfile).delete();
+                            Utils.deleteFile(apkfile);
                             return PluginManager.INSTALL_FAILED_NO_REQUESTEDPERMISSION;
                         }
                     }
@@ -863,14 +864,22 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                 sendInstalledBroadcast(info.packageName);
                 return PackageManagerCompat.INSTALL_SUCCEEDED;
             } else {
-                if (mPluginCache.containsKey(info.packageName)) {
+                boolean exists=false;
+                final PluginPackageParser tmpPaser = mPluginCache.get(info.packageName);
+                final PackageInfo tmpInfo;
+                exists = (tmpPaser != null && (tmpInfo=tmpPaser.getPackageInfo(0)) !=null && tmpInfo.versionCode >= info.versionCode);
+                if (exists) {
                     return PackageManagerCompat.INSTALL_FAILED_ALREADY_EXISTS;
                 } else {
+                    //更新没有验证apk包的签名
                     forceStopPackage(info.packageName);
-                    new File(apkfile).delete();
+                    Utils.deleteFile(apkfile);
+                    sendUpdateBroadcast(info.packageName);
                     Utils.copyFile(filepath, apkfile);
+                    Log.e(TAG, "installPackage -->> apkfile "+apkfile);
                     PluginPackageParser parser = new PluginPackageParser(mContext, new File(apkfile));
                     parser.collectCertificates(0);
+
                     PackageInfo pkgInfo = parser.getPackageInfo(PackageManager.GET_PERMISSIONS | PackageManager.GET_SIGNATURES);
                     if (pkgInfo != null && pkgInfo.requestedPermissions != null && pkgInfo.requestedPermissions.length > 0) {
                         for (String requestedPermission : pkgInfo.requestedPermissions) {
@@ -881,7 +890,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                             }
                             if (!mHostRequestedPermission.contains(requestedPermission) && b) {
                                 Log.e(TAG, "No Permission %s", requestedPermission);
-                                new File(apkfile).delete();
+                                Utils.deleteFile(apkfile);
                                 return PluginManager.INSTALL_FAILED_NO_REQUESTEDPERMISSION;
                             }
                         }
@@ -903,7 +912,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
             }
         } catch (Exception e) {
             if (apkfile != null) {
-                new File(apkfile).delete();
+                Utils.deleteFile(apkfile);
             }
             handleException(e);
             return PackageManagerCompat.INSTALL_FAILED_INTERNAL_ERROR;
@@ -930,7 +939,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.w(TAG, "Save signatures fail", e);
-                    file.delete();
+                    Utils.deleteFile(file);
                     Utils.deleteDir(PluginDirHelper.getPluginSignatureDir(mContext, pkgInfo.packageName));
                     break;
                 }
@@ -976,6 +985,13 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
         mContext.sendBroadcast(intent);
     }
 
+    private void sendUpdateBroadcast(String packageName){
+        Intent intent = new Intent(PluginManager.ACTION_PACKAGE_REMOVED);
+        intent.putExtra(Intent.EXTRA_REPLACING, true);
+        intent.setData(Uri.parse("package://" + packageName));
+        mContext.sendBroadcast(intent);
+    }
+
     private void copyNativeLibs(Context context, String apkfile, ApplicationInfo applicationInfo) throws Exception {
         String nativeLibraryDir = PluginDirHelper.getPluginNativeLibraryDir(context, applicationInfo.packageName);
         ZipFile zipFile = null;
@@ -1009,9 +1025,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                 String soPath = findSoPath(soPaths);
                 if (soPath != null) {
                     File file = new File(nativeLibraryDir, soName);
-                    if (file.exists()) {
-                        file.delete();
-                    }
+                    Utils.deleteFile(file);
                     InputStream in = null;
                     FileOutputStream ou = null;
                     try {
@@ -1026,9 +1040,7 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
                         ou.getFD().sync();
                         Log.i(TAG, "copy so(%s) for %s to %s ok!", soName, soPath, file.getPath());
                     } catch (Exception e) {
-                        if (file.exists()) {
-                            file.delete();
-                        }
+                        Utils.deleteFile(file);
                         throw e;
                     } finally {
                         if (in != null) {
@@ -1067,6 +1079,16 @@ public class IPluginManagerImpl extends IPluginManager.Stub {
             for (String soPath : soPaths) {
                 if (soPath.contains(Build.CPU_ABI2)) {
                     return soPath;
+                }
+            }
+            if(VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                final String[] cpsu = Build.SUPPORTED_ABIS;
+                for (String cpuabi : cpsu) {
+                    for (String soPath : soPaths) {
+                        if (soPath.contains(cpuabi)) {
+                            return soPath;
+                        }
+                    }
                 }
             }
         }

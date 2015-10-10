@@ -24,6 +24,7 @@ package com.morgoo.helper;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.SystemClock;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -75,15 +76,43 @@ public class Utils {
         deleteFile(new File(file));
     }
 
-    private static void deleteFile(File file) {
+    /**
+     *
+     * @param file
+     */
+    public static boolean deleteFile(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
                 deleteFile(files[i]);
             }
         }
-        file.delete();
+        //file.delete();
+        return delFileInternal(file);
     }
+
+    public static boolean deleteFile(String path){
+
+        return delFileInternal(new File(path));
+    }
+
+    private static boolean delFileInternal(File file){
+        if(file == null || !file.exists() || file.isDirectory()){
+            return false;
+        }
+        int retry=3;
+        boolean ret=file.delete();
+        while (!ret){
+            if(retry == 0){
+                break;
+            }
+            SystemClock.sleep(3);
+            ret=file.delete();
+            retry--;
+        }
+        return ret;
+    }
+
 
     public static void writeToFile(File file, byte[] data) throws IOException {
         FileOutputStream fou = null;

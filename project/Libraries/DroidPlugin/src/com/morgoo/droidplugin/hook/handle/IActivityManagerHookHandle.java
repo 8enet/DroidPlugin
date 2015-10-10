@@ -23,6 +23,7 @@
 package com.morgoo.droidplugin.hook.handle;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -540,6 +541,8 @@ public class IActivityManagerHookHandle extends BaseHookHandle {
             if (args != null && args.length > index && args[index] instanceof Intent) {
                 Intent intent = (Intent) args[index];
                 checkAndProcessIntent(intent);
+
+                Log.e(TAG, "broadcastIntent -->> "+intent+"   "+(intent.getExtras() != null?intent.getExtras():""));
             }
             return super.beforeInvoke(receiver, method, args);
         }

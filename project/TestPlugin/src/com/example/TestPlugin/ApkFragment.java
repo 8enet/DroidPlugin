@@ -167,7 +167,7 @@ public class ApkFragment extends ListFragment implements ServiceConnection {
                     }
                 }
 
-                file = new File(Environment.getExternalStorageDirectory(), "apk");
+                file = new File(Environment.getExternalStorageDirectory(), "apk"); //apk 文件夹
                 if (file.exists() && file.isDirectory()) {
                     for (File apk : file.listFiles()) {
                         if (apk.exists() && apk.getPath().toLowerCase().endsWith(".apk")) {
@@ -210,7 +210,8 @@ public class ApkFragment extends ListFragment implements ServiceConnection {
                 Toast.makeText(getActivity(), "插件服务正在初始化，请稍后再试。。。", Toast.LENGTH_SHORT).show();
             }
             try {
-                if (PluginManager.getInstance().getPackageInfo(item.packageInfo.packageName, 0) != null) {
+                final PackageInfo info = PluginManager.getInstance().getPackageInfo(item.packageInfo.packageName, 0);
+                if (info != null && info.versionCode >= item.versionCode) {
                     Toast.makeText(getActivity(), "已经安装了，不能再安装", Toast.LENGTH_SHORT).show();
                 } else {
                     new Thread() {

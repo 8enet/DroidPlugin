@@ -66,7 +66,7 @@ public abstract class ProxyHook extends Hook implements InvocationHandler {
 
             if (hookedMethodHandler != null) {
                 //if(hookedMethodHandler.getClass().getName().contains("startActivity")){
-                    Log.e(TAG, "invoke -->> "+method.getName()+" -->  "+hookedMethodHandler.getClass().getName()+"   <-- args "+ arraysToString(args));
+                   // Log.e(TAG, "invoke -->> "+method.getName()+" -->  "+hookedMethodHandler.getClass().getName()+"   <-- args "+ arraysToString(args));
                 //}
 
                 return hookedMethodHandler.doHookInner(mOldObj, method, args);
