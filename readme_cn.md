@@ -63,6 +63,7 @@ DroidPlugin 是***360手机助手***在Android系统上实现了一种新的**�
 	    @Override
 	    protected void attachBaseContext(Context base) {
 	        PluginHelper.getInstance().applicationAttachBaseContext(base);
+            super.attachBaseContext(base);
 	    }
 
 4.  将插件中`Libraries\DroidPlugin\AndroidManifest.xml`中**所有**的`provider`对应的`authorities`修改成自己的，默认为`com.morgoo.droidplugin_stub_P00`，如下：
@@ -80,6 +81,9 @@ DroidPlugin 是***360手机助手***在Android系统上实现了一种新的**�
             android:authorities="com.example.droidplugin_stub_P00"
             android:exported="false"
             android:label="@string/stub_name_povider" />
+    并且修改```PluginManager.STUB_AUTHORITY_NAME``` 为你的值:
+
+		PluginManager.STUB_AUTHORITY_NAME="com.example.droidplugin_stub"
 
 5.  集成完成。
 

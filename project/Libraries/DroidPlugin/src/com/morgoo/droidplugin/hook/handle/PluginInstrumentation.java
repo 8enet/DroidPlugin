@@ -61,7 +61,6 @@ public class PluginInstrumentation extends Instrumentation {
         mHostContext = hostContext;
     }
 
-
     @Override
     public void callActivityOnCreate(Activity activity, Bundle icicle) {
         if (enable) {
@@ -86,6 +85,7 @@ public class PluginInstrumentation extends Instrumentation {
         }
     }
 
+
     private void onActivityCreated(Activity activity) throws RemoteException {
         try {
             Intent targetIntent = activity.getIntent();
@@ -97,7 +97,8 @@ public class PluginInstrumentation extends Instrumentation {
                     PluginManager.getInstance().onActivityCreated(stubInfo, targetInfo);
                 }
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     private void onActivityDestory(Activity activity) throws RemoteException {
@@ -162,8 +163,8 @@ public class PluginInstrumentation extends Instrumentation {
 
     @Override
     public void callActivityOnNewIntent(Activity activity, Intent intent) {
-        if (activity != null && intent != null){
-            intent.setClassName(activity.getPackageName(),activity.getClass().getName());
+        if (activity != null && intent != null) {
+            intent.setClassName(activity.getPackageName(), activity.getClass().getName());
         }
 
         super.callActivityOnNewIntent(activity, intent);
